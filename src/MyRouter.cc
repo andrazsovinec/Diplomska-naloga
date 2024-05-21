@@ -22,11 +22,24 @@ MyRouter::MyRouter() {
 }
 
 MyRouter::~MyRouter() {
+    while (!queue.isEmpty()) {
+        cMessage *job = check_and_cast<cMessage *>(queue.pop());
+        cancelAndDelete( job );
+        //delete(job);
+    }
+
     jobsProcessingList::iterator msg;
     for (msg=jobsProcessing.begin(); msg!=jobsProcessing.end(); msg++)
     {
         //cancelAndDelete(*msg);
-        delete(*msg);
+        if((*msg)->isScheduled()){
+            //EV << "Scheduled message!" << endl;
+            cancelAndDelete(*msg);
+        }else{
+            delete(*msg);
+        }
+
+
     }
     jobsProcessing.clear();
 }
@@ -47,21 +60,12 @@ void MyRouter::initialize()
     jobsProcessing.clear();
 
     chanceToContinue = par("chanceToContinue");
-
-    //emit(droppedSignal, 0);
-    //emit(droppedSecSignal, 0);
-    emit(waitTimeSignal, (simtime_t)0);
 }
 
 void MyRouter::handleMessage(cMessage *msg)
 {
-    // The message kind member is not used by OMNeT++, it can be used freely by the user.
-    //EV << "Service time: " << serviceTime << "\n";
-    // ali je prislo sporocilo o koncu procesiranja
     if (msg->getKind() == 10)
     {
-
-        //EV << "Nardil je enga\n";
         cMessage *job = check_and_cast<cMessage *>(msg);
 
         jobsProcessingList::iterator msgIterator;
@@ -92,28 +96,24 @@ void MyRouter::handleMessage(cMessage *msg)
         {
             job = check_and_cast<cMessage *>( queue.pop() );
             job->setKind(10);
-            jobsProcessing.push_back(job);
 
-            scheduleAt( simTime()+serviceTime, job );   // v izvajanje damo novo opravilo, ki se bo izvedlo cez serviceTime casa
-
-            //EV << "Wait time: " << serviceTime << "s" << endl;
-            emit( waitTimeSignal, simTime() - job->getTimestamp() );
+            if(simTime()+serviceTime <= 60.0){
+                jobsProcessing.push_back(job);
+                scheduleAt( simTime()+serviceTime, job );
+                emit( waitTimeSignal, simTime() - job->getTimestamp() );
+            }else{
+                emit( waitTimeSignal, simTime() - job->getTimestamp() );
+                cancelAndDelete(job);
+            }
 
             processing++;
             length--;
         }
     }
-    // ali je prislo novo opravilo
     else
     {
         cMessage *job = check_and_cast<cMessage *>(msg);
         job->setKind(1);
-
-        /*
-        if(job->isName("PrimaryMessage")){
-            emit( waitTimeSignal, simTime() - job->getTimestamp() );
-        }
-        */
 
         if (processing < resources)
         {
@@ -121,14 +121,12 @@ void MyRouter::handleMessage(cMessage *msg)
             job->setKind(10);
             jobsProcessing.push_back(job);
             scheduleAt( simTime()+serviceTime, job );
-            //EV << "Wait time: " << serviceTime << "s" << endl;
             emit(waitTimeSignal,(simtime_t)0);
         }
         else
         {
             if (capacity >=0 && length >= capacity)
             {
-                // cakalna vrsta je presegla svojo kapaciteto
                 if(msg->isName("PrimaryMessage")){
                     emit(droppedSignal, 1);
                 }else{
@@ -159,11 +157,6 @@ void MyRouter::updateDisplay(int i, int p, int r)
 }
 
 void MyRouter::finish(){
-    while (!queue.isEmpty()) {
-        cMessage *job = check_and_cast<cMessage *>(queue.pop());
-        //cancelAndDelete( job );
-        delete(job);
-    }
 }
 
 

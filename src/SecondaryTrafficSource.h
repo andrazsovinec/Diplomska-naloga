@@ -29,7 +29,7 @@ class SecondaryTrafficSource : public cSimpleModule
       omnetpp::simtime_t messageInterval;
       omnetpp::simtime_t prevControl;
       simsignal_t generatedSignal;
-      bool expDistribution; // Use exponential distribution for message generation
+      bool expDistribution;
 
       omnetpp::cPacket *generateMessage();
 

@@ -20,16 +20,11 @@
 
 using namespace omnetpp;
 
-/**
- * TODO - Generated class
- */
 class OutQueue : public cSimpleModule
 {
   private:
     simsignal_t droppedSignal;
     simsignal_t waitTimeSignal;
-    simsignal_t queueLengthSignal;
-    simsignal_t utilizationSignal;
 
     cQueue inputQueue;
     cPacket *currentMessage;

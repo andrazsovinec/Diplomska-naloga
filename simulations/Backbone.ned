@@ -18,7 +18,7 @@ package simulations;
 import inet.node.ethernet.*;
 import ned.DatarateChannel;
 import src.MyRouter;
-import src.NetworkModule;
+//import src.NetworkModule;
 import src.Server;
 import src.Client;
 import src.ClientOut;
@@ -173,7 +173,7 @@ network Backbone
         queue06.out --> Eth10G --> O2.in;
         queue07.out --> Eth10G --> O3.in;
         queue08.out --> Eth10G --> O4.in;
-        queue04.out --> Eth1G --> server.in++;
+        queue04.out --> Eth1G {  length = 1000m; } --> server.in++;
         router3.out --> queue04.in;
         router3.outSec --> queue08.in;
         router.outTer --> queue09.in;

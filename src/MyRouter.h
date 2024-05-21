@@ -26,8 +26,6 @@ private:
     simsignal_t droppedSignal;
     simsignal_t droppedSecSignal;
     simsignal_t waitTimeSignal;
-    simsignal_t queueLengthSignal;
-    simsignal_t utilizationSignal;
 
     cQueue queue;
     int capacity, length;
@@ -54,4 +52,4 @@ protected:
 
 
 
-#endif /* MYQUEUE_H_ */
+#endif

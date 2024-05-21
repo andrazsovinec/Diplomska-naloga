@@ -23,6 +23,13 @@ Server::Server() {
 }
 
 Server::~Server() {
+
+    while (!queue.isEmpty()) {
+        cMessage *job = check_and_cast<cMessage *>(queue.pop());
+        cancelAndDelete( job );
+        //delete(job);
+    }
+
     jobsProcessingList::iterator msg;
     for (msg=jobsProcessing.begin(); msg!=jobsProcessing.end(); msg++)
     {
@@ -47,16 +54,11 @@ void Server::initialize()
     measureRouters = par("measureRouters");
     jobsProcessing.clear();
     SharedCounter::successfulDeliveries = 0;
-
-    //emit(droppedSignal, 0);
-    //emit(deliveredSignal, 0);
-    emit(waitTimeSignal, (simtime_t)0);
 }
 
 void Server::handleMessage(omnetpp::cMessage *msg)
 {
     EV << "Service time: " << serviceTime << "\n";
-        // ali je prislo sporocilo o koncu procesiranja
         if (msg->getKind() == 10)
         {
 
@@ -87,7 +89,7 @@ void Server::handleMessage(omnetpp::cMessage *msg)
                 job->setKind(10);
                 jobsProcessing.push_back(job);
 
-                scheduleAt( simTime()+serviceTime, job );   // v izvajanje damo novo opravilo, ki se bo izvedlo cez serviceTime casa
+                scheduleAt( simTime()+serviceTime, job );
 
                 EV << "Wait time: " << serviceTime << "s" << endl;
                 emit( waitTimeSignal, simTime() - job->getTimestamp() );
@@ -96,7 +98,6 @@ void Server::handleMessage(omnetpp::cMessage *msg)
                 length--;
             }
         }
-        // ali je prislo novo opravilo
         else
         {
             cMessage *job = msg;
@@ -115,7 +116,6 @@ void Server::handleMessage(omnetpp::cMessage *msg)
             {
                 if (capacity >=0 && length >= capacity)
                 {
-                    // cakalna vrsta je presegla svojo kapaciteto
                     if(msg->isName("PrimaryMessage")){
                         emit(droppedSignal, 1);
                     }
@@ -132,13 +132,10 @@ void Server::handleMessage(omnetpp::cMessage *msg)
                 }
             }
         }
-
-    // Dispose of the message by deleting it
 }
 
 
 void Server::finish() {
-    // Record statistics or print them at the end of the simulation
     EV << "Successful Deliveries at Server: " << SharedCounter::successfulDeliveries << endl;
     EV << "Total amount of generated packets: " << SharedCounter::totalPacketsGenerated << endl;
     EV << "Total amount of fixed delays: " << SharedCounter::fixedDelays << endl;

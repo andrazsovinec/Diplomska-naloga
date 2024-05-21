@@ -37,37 +37,35 @@ void Client::initialize()
 
 void Client::handleMessage(omnetpp::cMessage *msg)
 {
-    //if(simTime() < simulationEndTime){
-        if (expDistribution) {
-            if(msg->isName("PrimaryMessage")){
-                cPacket *packet = check_and_cast<cPacket *>(msg);
-                packet->setTimestamp();
-                send(packet, "out");
-                if(simTime() < 60.0){
-                    SharedCounter::totalPacketsGenerated++;
-                }
-            }else{
-                cancelAndDelete(msg);
-                simtime_t delay = exponential(0.1);
-                if(delay > 1.0){
-                    delay = 0.98;
-                    SharedCounter::fixedDelays++;
-                }
-                scheduleAt(omnetpp::simTime() + delay, generateMessage());
-                omnetpp::cPacket *control = new omnetpp::cPacket("Control");
-                control->setName("Control");
-                scheduleAt(omnetpp::simTime() + messageInterval, control);
-            }
-        } else {
+    if (expDistribution) {
+        if(msg->isName("PrimaryMessage")){
             cPacket *packet = check_and_cast<cPacket *>(msg);
             packet->setTimestamp();
             send(packet, "out");
             if(simTime() < 60.0){
                 SharedCounter::totalPacketsGenerated++;
             }
-            scheduleAt(omnetpp::simTime() + messageInterval, generateMessage());
+        }else{
+            cancelAndDelete(msg);
+            simtime_t delay = exponential(0.1);
+            if(delay > 1.0){
+                delay = 0.98;
+                SharedCounter::fixedDelays++;
+            }
+            scheduleAt(omnetpp::simTime() + delay, generateMessage());
+            omnetpp::cPacket *control = new omnetpp::cPacket("Control");
+            control->setName("Control");
+            scheduleAt(omnetpp::simTime() + messageInterval, control);
         }
-    //}
+    } else {
+        cPacket *packet = check_and_cast<cPacket *>(msg);
+        packet->setTimestamp();
+        send(packet, "out");
+        if(simTime() < 60.0){
+            SharedCounter::totalPacketsGenerated++;
+        }
+        scheduleAt(omnetpp::simTime() + messageInterval, generateMessage());
+    }
 }
 
 omnetpp::cPacket *Client::generateMessage()

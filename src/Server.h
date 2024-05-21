@@ -27,9 +27,7 @@ class Server : public omnetpp::cSimpleModule
     simsignal_t deliveredSignal;
     simsignal_t waitTimeSignal;
     simsignal_t travelTimeSignal;
-    simsignal_t queueLengthSignal;
-    simsignal_t utilizationSignal;
-
+    
     cQueue queue;
     int capacity, length;
     int resources, processing;
@@ -42,7 +40,7 @@ class Server : public omnetpp::cSimpleModule
       Server();
       virtual ~Server();
   protected:
-    virtual void initialize();
+    virtual void initialize() override;
     virtual void handleMessage(omnetpp::cMessage *msg) override;
     virtual void finish() override;
 };

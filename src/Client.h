@@ -25,7 +25,7 @@ class Client : public omnetpp::cSimpleModule
   private:
     omnetpp::simtime_t messageInterval;
     simtime_t simulationEndTime;
-    bool expDistribution; // Use exponential distribution for message generation
+    bool expDistribution;
 
     omnetpp::cPacket *generateMessage();
 

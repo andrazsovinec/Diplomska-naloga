@@ -25,11 +25,11 @@ OutQueue::OutQueue()
 OutQueue::~OutQueue()
 {
     cancelAndDelete(currentMessage);
-    delete currentMessage;
+    //delete currentMessage;
     while (!inputQueue.isEmpty()) {
         cPacket *packet = check_and_cast<cPacket *>(inputQueue.pop());
-        //cancelAndDelete( packet );
-        delete(packet);
+        cancelAndDelete( packet );
+        //delete(packet);
     }
     inputQueue.clear();
 }
@@ -42,21 +42,11 @@ void OutQueue::initialize()
     capacity = par("capacity");
     measureRouters = par("measureRouters");
     EV << "Queue capacity: " << capacity << endl;
-
-    //emit(droppedSignal, 0);
-    emit(waitTimeSignal, (simtime_t)0);
 }
 
 void OutQueue::handleMessage(cMessage *msg)
 {
     cPacket *packet = check_and_cast<cPacket *>(msg);
-
-    /*
-    cGate *outGate = gate("out");
-    cChannel *channel = outGate->getTransmissionChannel();
-    simtime_t transmissionFinishTime = channel->getTransmissionFinishTime();
-    EV << "Transmission Finish Time: " << transmissionFinishTime << endl;
-    */
 
     if (packet->isName("Control")) {
         cancelAndDelete(packet);
@@ -118,10 +108,5 @@ void OutQueue::sendNextMessage()
 }
 
 void OutQueue::finish(){
-    while (!inputQueue.isEmpty()) {
-        cPacket *packet = check_and_cast<cPacket *>(inputQueue.pop());
-        //cancelAndDelete( packet );
-        delete(packet);
-    }
 }
 

@@ -26,8 +26,8 @@ simple OutsideSecondary
         @statistic[generated](title="generate packet";record=vector,count;interpolationmode=none);
         
         //double secondaryMessageInterval @unit(s) = default(0.0000048s);
-        //double secondaryMessageInterval @unit(s) = default(0.0000096s);
-        double secondaryMessageInterval @unit(s) = default(0.00000727s);
+        double secondaryMessageInterval @unit(s) = default(0.0000096s);
+        //double secondaryMessageInterval @unit(s) = default(0.00000727s);
         //double secondaryMessageInterval @unit(s) = default(5.0s);
         bool secondaryUseExponentialDistribution = default(true);
 

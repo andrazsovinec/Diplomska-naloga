@@ -34,7 +34,6 @@ simple MyRouter
     	int resources = default(8);
     	bool measureRouters = default(false);
     	double chanceToContinue = default(0.5);      
-        // volatile double serviceTime @unit(s) = default( truncnormal(0.0000055s,0.0000015s) );
         volatile double serviceTime @unit(s) = default( truncnormal(5.5s,1.5s) );
     
     gates:

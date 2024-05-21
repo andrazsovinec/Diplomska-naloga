@@ -37,8 +37,6 @@ simple Server
     	int capacity = default(40000);
     	int resources = default(1);
     	bool measureRouters = default(false);
-    	//double chanceToContinue = default(0.5);      
-        //volatile double serviceTime @unit(s) = default( truncnormal(0.0000055s,0.0000015s) );
         volatile double serviceTime @unit(s) = default( 0.0001s );
     
     gates:
