@@ -1,0 +1,1 @@
+Po koncu simulacije nekaj zahtev ostane nekje v omrežju. V primeru, da se kakšna od teh zahtev nepravilno izbriše, je to na koncu simulacije javljeno v konzoli poleg ostalih izpisov. To nima nobenega vpliva na rezultate simulacije.
